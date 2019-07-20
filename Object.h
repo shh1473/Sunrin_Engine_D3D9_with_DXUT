@@ -1,0 +1,32 @@
+#pragma once
+
+#include "Common.h"
+#include "Math.h"
+
+class Object
+{
+public:
+	Object();
+	virtual ~Object();
+
+	virtual void Update();
+	virtual void Render();
+
+	void AddChild(Object *child);
+
+public:
+	bool isDestroyed;
+	bool isActivated;
+	float width;
+	float height;
+	Rect rect;
+
+	D3DXVECTOR3 translation;
+	D3DXVECTOR3 rotation;
+	D3DXVECTOR3 scaling;
+	D3DXMATRIX worldMatrix;
+
+	Object *parent;
+	vector<Object*> children;
+
+};
