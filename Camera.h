@@ -1,13 +1,16 @@
 #pragma once
 
 #include "Object.h"
+#include "Surface.h"
 
 class Camera : public Object
 {
 public:
-	Camera(float viewWidth, float viewHeight);
+	Camera(Surface *renderTarget);
 
 	virtual void Update();
+
+	virtual void Ready();
 
 public:
 	float viewWidth;
@@ -19,5 +22,6 @@ public:
 	D3DXVECTOR3 up;
 	D3DXMATRIX viewMatrix;
 	D3DXMATRIX projMatrix;
+	Surface *surface;
 
 };

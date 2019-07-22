@@ -1,16 +1,16 @@
 #include "DXUT.h"
 #include "App.h"
-#include "Test/IntersectionScene.h"
+#include "Test/BloomScene.h"
 
 App::App() :
-	mousePos({ 0L, 0L }),
+	mousePos({ 0, 0 }),
 	nowScene(nullptr),
 	nextScene(nullptr),
 	camera(nullptr),
 	deltaTime(0.0f)
 {
-	memset(&nowKeys, false, sizeof(bool) * 256);
-	memset(&oldKeys, false, sizeof(bool) * 256);
+	ZeroMemory(nowKeys, sizeof(bool) * 256);
+	ZeroMemory(oldKeys, sizeof(bool) * 256);
 }
 
 void App::Initialize()
@@ -30,46 +30,39 @@ void App::Initialize()
 	// ¼ÎÀÌ´õ ¸ÅÅ©·Î
 	D3DXMACRO macros01[2] = {
 		{ "ENABLE_TINT", "1" },
-		{ nullptr, nullptr }
-	};
+		{ nullptr, nullptr } };
 	D3DXMACRO macros02[2] = {
 		{ "ENABLE_DIFFUSE_MAP", "1" },
-		{ nullptr, nullptr }
-	};
+		{ nullptr, nullptr } };
 	D3DXMACRO macros03[3] = {
 		{ "ENABLE_DIFFUSE_MAP", "1" },
 		{ "ENABLE_AMBIENT_LIGHT", "1" },
-		{ nullptr, nullptr }
-	};
+		{ nullptr, nullptr } };
 	D3DXMACRO macros04[5] = {
 		{ "ENABLE_DIFFUSE_MAP", "1" },
 		{ "ENABLE_DIRECTIONAL_LIGHT", "1" },
 		{ "DIRECTIONAL_LIGHT_COUNT", "2" },
 		{ "ENABLE_SPECULAR", "1" },
-		{ nullptr, nullptr }
-	};
+		{ nullptr, nullptr } };
 	D3DXMACRO macros05[5] = {
 		{ "ENABLE_DIFFUSE_MAP", "1" },
 		{ "ENABLE_POINT_LIGHT", "1" },
 		{ "POINT_LIGHT_COUNT", "2" },
 		{ "ENABLE_SPECULAR", "1" },
-		{ nullptr, nullptr }
-	};
+		{ nullptr, nullptr } };
 	D3DXMACRO macros06[5] = {
 		{ "ENABLE_DIFFUSE_MAP", "1" },
 		{ "ENABLE_SPOT_LIGHT", "1" },
 		{ "SPOT_LIGHT_COUNT", "2" },
 		{ "ENABLE_SPECULAR", "1" },
-		{ nullptr, nullptr }
-	};
+		{ nullptr, nullptr } };
 	D3DXMACRO macros07[6] = {
 		{ "ENABLE_DIFFUSE_MAP", "1" },
 		{ "ENABLE_SPECULAR_MAP", "1" },
 		{ "ENABLE_SPOT_LIGHT", "1" },
 		{ "SPOT_LIGHT_COUNT", "1" },
 		{ "ENABLE_SPECULAR", "1" },
-		{ nullptr, nullptr }
-	};
+		{ nullptr, nullptr } };
 	D3DXMACRO macros08[7] = {
 		{ "ENABLE_DIFFUSE_MAP", "1" },
 		{ "ENABLE_SPECULAR_MAP", "1" },
@@ -77,8 +70,19 @@ void App::Initialize()
 		{ "ENABLE_SPOT_LIGHT", "1" },
 		{ "SPOT_LIGHT_COUNT", "1" },
 		{ "ENABLE_SPECULAR", "1" },
-		{ nullptr, nullptr }
-	};
+		{ nullptr, nullptr } };
+	D3DXMACRO macros09[3] = {
+		{ "COLOR_CONTRAST", "1" },
+		{ "FILTER_CUSTOM", "1" },
+		{ nullptr, nullptr } };
+	D3DXMACRO macros10[2] = {
+		{ "ENABLE_BLUR", "1" },
+		{ nullptr, nullptr } };
+	D3DXMACRO macros11[5] = {
+		{ "COLOR_CONTRAST", "1" },
+		{ "FILTER_CUSTOM", "1" },
+		{ "ENABLE_BLOOM", "1" },
+		{ nullptr, nullptr } };
 
 	// ¼ÎÀÌ´õ
 	CreateShader(L"Resource\\Shader\\SpriteShader.fx", L"TintSprite", macros01);
@@ -89,6 +93,10 @@ void App::Initialize()
 	CreateShader(L"Resource\\Shader\\SpriteShader.fx", L"SpotLightSprite", macros06);
 	CreateShader(L"Resource\\Shader\\SpriteShader.fx", L"SpecularMapSprite", macros07);
 	CreateShader(L"Resource\\Shader\\SpriteShader.fx", L"NormalMapSprite", macros08);
+
+	CreateShader(L"Resource\\Shader\\CameraShader.fx", L"CameraFilter", macros09);
+	CreateShader(L"Resource\\Shader\\CameraShader.fx", L"CameraBlur", macros10);
+	CreateShader(L"Resource\\Shader\\CameraShader.fx", L"CameraBloom", macros11);
 
 	// Á¤Á¡ ¼±¾ð
 	CreateVertexDeclaration(L"Position");
@@ -101,8 +109,19 @@ void App::Initialize()
 	CreateMaterial(L"Fieldstone", 1, 1, L"FieldstoneDM", L"FieldstoneSM", L"FieldstoneNM");
 	CreateMaterial(L"Fieldstone3x3", 3, 3, L"FieldstoneDM", L"FieldstoneSM", L"FieldstoneNM");
 
+	// ·»´õ Å¸°Ù
+	surfaces[L"BackBuffer"] = new Surface();
+	DXUTGetD3D9Device()->GetRenderTarget(0, &surfaces[L"BackBuffer"]->surface);
+	surfaces[L"BackBuffer"]->surface->GetDesc(&surfaces[L"BackBuffer"]->desc);
+
+	CreateSurface(L"Scene");
+	CreateSurface(L"SourceMap1");
+	CreateSurface(L"SourceMap2");
+	CreateSurface(L"SourceMap3");
+	CreateSurface(L"SourceMap4");
+
 	// Ã¹ ¾À
-	nextScene = new IntersectionScene();
+	nextScene = new BloomScene();
 }
 
 void App::Shutdown()
@@ -131,6 +150,11 @@ void App::Shutdown()
 	}
 
 	for (auto iter : materials)
+	{
+		SAFE_DELETE(iter.second);
+	}
+
+	for (auto iter : surfaces)
 	{
 		SAFE_DELETE(iter.second);
 	}
@@ -318,6 +342,32 @@ void App::CreateVertexDeclaration(wstring name, unsigned flag)
 void App::CreateMaterial(wstring name, unsigned widthCount, unsigned heightCount, wstring diffuseMapName, wstring specularMapName, wstring normalMapName)
 {
 	materials[name] = new Material(widthCount, heightCount, diffuseMapName, specularMapName, normalMapName);
+}
+
+void App::CreateSurface(wstring name, unsigned width, unsigned height)
+{
+	if (width == 0 || height == 0)
+	{
+		RECT rt = DXUTGetWindowClientRect();
+
+		width = (width == 0) ? rt.right : width;
+		height = (height == 0) ? rt.bottom : height;
+	}
+
+	surfaces[name] = new Surface();
+
+	DXUTGetD3D9Device()->CreateTexture(
+		width,
+		height,
+		1,
+		D3DUSAGE_RENDERTARGET,
+		D3DFMT_A8R8G8B8,
+		D3DPOOL_DEFAULT,
+		&surfaces[name]->texture,
+		NULL);
+
+	surfaces[name]->texture->GetSurfaceLevel(0, &surfaces[name]->surface);
+	surfaces[name]->surface->GetDesc(&surfaces[name]->desc);
 }
 
 App app;

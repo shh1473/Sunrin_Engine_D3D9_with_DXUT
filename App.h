@@ -2,10 +2,11 @@
 
 #include "Camera.h"
 #include "Timer.h"
-#include "Material.h"
 #include "Sound.h"
 #include "Shader.h"
 #include "VertexDeclaration.h"
+#include "Material.h"
+#include "Surface.h"
 
 class App
 {
@@ -31,7 +32,7 @@ public:
 		D3DXMACRO *macros = nullptr);
 	void CreateVertexDeclaration(
 		wstring name,
-		unsigned flag = 0);
+		unsigned flag = NULL);
 	void CreateMaterial(
 		wstring name,
 		unsigned widthCount = 1,
@@ -39,6 +40,10 @@ public:
 		wstring diffuseMapName = L"Default",
 		wstring specularMapName = L"Default",
 		wstring normalMapName = L"Default");
+	void CreateSurface(
+		wstring name,
+		unsigned width = 0,
+		unsigned height = 0);
 
 public:
 	// ют╥б
@@ -63,6 +68,7 @@ public:
 	map<wstring, Shader*> shaders;
 	map<wstring, VertexDeclaration*> vertexDeclarations;
 	map<wstring, Material*> materials;
+	map<wstring, Surface*> surfaces;
 
 };
 

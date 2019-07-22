@@ -40,7 +40,7 @@ public:
 	};
 
 public:
-	Sprite(Shader *shader, VertexDeclaration *vertexDeclaration, Material *material, unsigned flag);
+	Sprite(Shader *shader, VertexDeclaration *vertexDeclaration, Material *material, unsigned renderFlags);
 	virtual ~Sprite();
 
 	virtual void Render();
@@ -48,7 +48,7 @@ public:
 	void ChangeFrameIndex(unsigned i, unsigned j);
 
 public:
-	unsigned renderFlag;
+	unsigned renderFlags;
 	unsigned widthFrameIndex;
 	unsigned heightFrameIndex;
 	D3DXVECTOR4 color;

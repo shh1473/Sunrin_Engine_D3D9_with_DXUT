@@ -388,16 +388,21 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="DXUT\Optional\SDKsound.cpp" />
     <ClCompile Include="DXUT\Optional\SDKwavefile.cpp" />
+    <ClCompile Include="EffectCamera.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Math.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="Sound.cpp" />
     <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="Surface.cpp" />
     <ClCompile Include="Test\AmbientLightScene.cpp" />
+    <ClCompile Include="Test\BloomScene.cpp" />
+    <ClCompile Include="Test\BlurScene.cpp" />
     <ClCompile Include="Test\DiffuseMapSpriteScene.cpp" />
     <ClCompile Include="Test\DirectionalLightScene.cpp" />
     <ClCompile Include="Test\EmptyScene.cpp" />
+    <ClCompile Include="Test\FilterScene.cpp" />
     <ClCompile Include="Test\IntersectionScene.cpp" />
     <ClCompile Include="Test\NormalMapSpriteScene.cpp" />
     <ClCompile Include="Test\ObjectScene.cpp" />
@@ -413,6 +418,7 @@
     <ClInclude Include="Common.h" />
     <ClInclude Include="DXUT\Optional\SDKsound.h" />
     <ClInclude Include="DXUT\Optional\SDKwavefile.h" />
+    <ClInclude Include="EffectCamera.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="Math.h" />
@@ -420,6 +426,10 @@
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="Sound.h" />
     <ClInclude Include="SunrinEngine.h" />
+    <ClInclude Include="Surface.h" />
+    <ClInclude Include="Test\BloomScene.h" />
+    <ClInclude Include="Test\BlurScene.h" />
+    <ClInclude Include="Test\FilterScene.h" />
     <ClInclude Include="Test\IntersectionScene.h" />
     <ClInclude Include="Test\AmbientLightScene.h" />
     <ClInclude Include="Test\DiffuseMapSpriteScene.h" />
@@ -474,6 +484,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resource\Shader\CameraShader.fx">
+      <FileType>Document</FileType>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

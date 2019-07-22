@@ -1,10 +1,14 @@
 #include "DXUT.h"
-#include "NormalMapSpriteScene.h"
+#include "BlurScene.h"
 
-NormalMapSpriteScene::NormalMapSpriteScene()
+BlurScene::BlurScene()
 {
 	// »ý¼º
-	camera = new Camera(app.surfaces[L"BackBuffer"]);
+	camera = new EffectCamera(
+		app.shaders[L"CameraBlur"],
+		app.vertexDeclarations[L"TexCoord"],
+		app.surfaces[L"SourceMap4"],
+		CAMERA_BLUR);
 	AddChild(camera);
 
 	sptLight = new SpotLight();
@@ -26,9 +30,15 @@ NormalMapSpriteScene::NormalMapSpriteScene()
 	app.materials[L"Fieldstone"]->specularPower = 20.0f;
 
 	app.camera = camera;
+	camera->sourceMaps[0] = app.surfaces[L"Scene"];
+	camera->sourceMaps[1] = app.surfaces[L"SourceMap1"];
+	camera->sourceMaps[2] = app.surfaces[L"SourceMap2"];
+	camera->sourceMaps[3] = app.surfaces[L"SourceMap3"];
+	camera->thresholdIntensityViewportInv.z = 1.0f / static_cast<float>(camera->sourceMaps[0]->desc.Width);
+	camera->thresholdIntensityViewportInv.w = 1.0f / static_cast<float>(camera->sourceMaps[0]->desc.Height);
 	camera->translation.z = -500.0f;
 
-	sptLight->colorIntensity = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 1.0f);
+	sptLight->colorIntensity = D3DXVECTOR4(1.0f, 1.0f, 1.0f, 2.0f);
 	sptLight->translation = D3DXVECTOR3(0.0f, 0.0f, -100.0f);
 	sptLight->rotation.y = 30.0f;
 	sptLight->innerAngle = 85.0f;
@@ -39,12 +49,12 @@ NormalMapSpriteScene::NormalMapSpriteScene()
 	sprite->spotLights[0] = sptLight;
 }
 
-NormalMapSpriteScene::~NormalMapSpriteScene()
+BlurScene::~BlurScene()
 {
 
 }
 
-void NormalMapSpriteScene::Update()
+void BlurScene::Update()
 {
 	Object::Update();
 
@@ -72,26 +82,13 @@ void NormalMapSpriteScene::Update()
 	{
 		sptLight->rotation.y -= 90.0f * app.deltaTime;
 	}
-
-	if (app.IsPressing('L'))
-	{
-		camera->translation.x += 100.0f * app.deltaTime;
-	}
-	if (app.IsPressing('J'))
-	{
-		camera->translation.x -= 100.0f * app.deltaTime;
-	}
-	if (app.IsPressing('I'))
-	{
-		camera->translation.y += 100.0f * app.deltaTime;
-	}
-	if (app.IsPressing('K'))
-	{
-		camera->translation.y -= 100.0f * app.deltaTime;
-	}
 }
 
-void NormalMapSpriteScene::Render()
+void BlurScene::Render()
 {
+	camera->Ready();
+
 	Object::Render();
+
+	camera->Effect();
 }

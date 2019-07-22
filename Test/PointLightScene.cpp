@@ -3,7 +3,7 @@
 
 PointLightScene::PointLightScene()
 {
-	camera = new Camera(800.0f, 600.0f);
+	camera = new Camera(app.surfaces[L"BackBuffer"]);
 	AddChild(camera);
 
 	pntLight01 = new PointLight();

@@ -99,6 +99,21 @@
     <Filter Include="Test\Scene\11_IntersectionScene">
       <UniqueIdentifier>{3c08131a-148a-4341-9e44-dfc60fea50df}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Test\Scene\12_FilterScene">
+      <UniqueIdentifier>{152d9585-9c85-43dc-8f5c-229eef070e97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sunrin_Engine_D3D9\Object\Camera\EffectCamera">
+      <UniqueIdentifier>{43bc6da6-0062-4b56-8419-cac7d70bd953}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sunrin_Engine_D3D9\Resource\Surface">
+      <UniqueIdentifier>{366c829b-b454-4873-bdc8-68ac300ab990}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Test\Scene\13_BlurScene">
+      <UniqueIdentifier>{95522091-eb86-4bd3-9a9f-31fe134892cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Test\Scene\14_BloomScene">
+      <UniqueIdentifier>{b1017534-525a-4081-943a-3c0d5bead8eb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="DXUT\Optional\directx.ico">
@@ -159,6 +174,9 @@
       <Filter>DXUT</Filter>
     </ClCompile>
     <None Include="Resource\Shader\SpriteShader.fx">
+      <Filter>Resource Files\Shaders</Filter>
+    </None>
+    <None Include="Resource\Shader\CameraShader.fx">
       <Filter>Resource Files\Shaders</Filter>
     </None>
   </ItemGroup>
@@ -241,6 +259,21 @@
     </ClCompile>
     <ClCompile Include="Test\IntersectionScene.cpp">
       <Filter>Test\Scene\11_IntersectionScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\FilterScene.cpp">
+      <Filter>Test\Scene\12_FilterScene</Filter>
+    </ClCompile>
+    <ClCompile Include="EffectCamera.cpp">
+      <Filter>Sunrin_Engine_D3D9\Object\Camera\EffectCamera</Filter>
+    </ClCompile>
+    <ClCompile Include="Surface.cpp">
+      <Filter>Sunrin_Engine_D3D9\Resource\Surface</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\BlurScene.cpp">
+      <Filter>Test\Scene\13_BlurScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\BloomScene.cpp">
+      <Filter>Test\Scene\14_BloomScene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -331,6 +364,21 @@
     </ClInclude>
     <ClInclude Include="Test\IntersectionScene.h">
       <Filter>Test\Scene\11_IntersectionScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\FilterScene.h">
+      <Filter>Test\Scene\12_FilterScene</Filter>
+    </ClInclude>
+    <ClInclude Include="EffectCamera.h">
+      <Filter>Sunrin_Engine_D3D9\Object\Camera\EffectCamera</Filter>
+    </ClInclude>
+    <ClInclude Include="Surface.h">
+      <Filter>Sunrin_Engine_D3D9\Resource\Surface</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\BlurScene.h">
+      <Filter>Test\Scene\13_BlurScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\BloomScene.h">
+      <Filter>Test\Scene\14_BloomScene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

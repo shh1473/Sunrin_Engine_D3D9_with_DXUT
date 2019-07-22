@@ -1,6 +1,39 @@
 // ==================================================================================
-// CONSTANT STRUCTURES
+// STRUCTURES AND VARIABLES
 // ==================================================================================
+#if defined(ENABLE_DIFFUSE_MAP)
+texture DiffuseMap;
+sampler DiffuseSampler
+{
+	Texture = DiffuseMap;
+MINFILTER = NONE;
+MAGFILTER = NONE;
+MIPFILTER = NONE;
+};
+#endif
+
+#if defined(ENABLE_SPECULAR_MAP)
+texture SpecularMap;
+sampler SpecularSampler
+{
+	Texture = SpecularMap;
+MINFILTER = NONE;
+MAGFILTER = NONE;
+MIPFILTER = NONE;
+};
+#endif
+
+#if defined(ENABLE_NORMAL_MAP)
+texture NormalMap;
+sampler NormalSampler
+{
+	Texture = NormalMap;
+MINFILTER = NONE;
+MAGFILTER = NONE;
+MIPFILTER = NONE;
+};
+#endif
+
 #if defined(ENABLE_AMBIENT_LIGHT)
 struct AmbientLight
 {
@@ -34,47 +67,11 @@ struct SpotLight
 };
 #endif
 
-// ==================================================================================
-// CONSTANT VARIABLES
-// ==================================================================================
 float4x4 WVPMatrix;
 float4 Color;
 
 #if defined(ENABLE_TINT)
 float4 Tint;
-#endif
-
-#if defined(ENABLE_DIFFUSE_MAP)
-texture DiffuseMap;
-sampler2D DiffuseSampler
-{
-	Texture = DiffuseMap;
-	MINFILTER = NONE;
-	MAGFILTER = NONE;
-	MIPFILTER = NONE;
-};
-#endif
-
-#if defined(ENABLE_SPECULAR_MAP)
-texture SpecularMap;
-sampler2D SpecularSampler
-{
-	Texture = SpecularMap;
-	MINFILTER = NONE;
-	MAGFILTER = NONE;
-	MIPFILTER = NONE;
-};
-#endif
-
-#if defined(ENABLE_NORMAL_MAP)
-texture NormalMap;
-sampler2D NormalSampler
-{
-	Texture = NormalMap;
-	MINFILTER = NONE;
-	MAGFILTER = NONE;
-	MIPFILTER = NONE;
-};
 #endif
 
 #if defined(ENABLE_AMBIENT_LIGHT) || defined(ENABLE_DIRECTIONAL_LIGHT) || defined(ENABLE_POINT_LIGHT) || defined(ENABLE_SPOT_LIGHT)
@@ -103,9 +100,6 @@ float SpecularIntensity;
 float SpecularPower;
 #endif
 
-// ==================================================================================
-// VERTEX SHADER
-// ==================================================================================
 struct VS_INPUT
 {
 	float4 position : POSITION;
@@ -142,6 +136,29 @@ struct VS_OUTPUT
 #endif
 };
 
+struct PS_INPUT
+{
+#if defined(ENABLE_DIFFUSE_MAP)
+	float2 texCoord : TEXCOORD0;
+#endif
+#if defined(ENABLE_AMBIENT_LIGHT) || defined(ENABLE_DIRECTIONAL_LIGHT) || defined(ENABLE_POINT_LIGHT) || defined(ENABLE_SPOT_LIGHT)
+	float3 normal : TEXCOORD1;
+#endif
+#if defined(ENABLE_NORMAL_MAP)
+	float3 tangent : TEXCOORD2;
+	float3 binormal : TEXCOORD3;
+#endif
+#if defined(ENABLE_SPECULAR)
+	float3 camDir : TEXCOORD4;
+#endif
+#if defined(ENABLE_POINT_LIGHT) || defined(ENABLE_SPOT_LIGHT)
+	float3 worldPos : TEXCOORD5;
+#endif
+};
+
+// ==================================================================================
+// VERTEX SHADER
+// ==================================================================================
 VS_OUTPUT vs_main(VS_INPUT Input)
 {
 	VS_OUTPUT Output;
@@ -184,26 +201,6 @@ VS_OUTPUT vs_main(VS_INPUT Input)
 // ==================================================================================
 // PIXEL SHADER
 // ==================================================================================
-struct PS_INPUT
-{
-#if defined(ENABLE_DIFFUSE_MAP)
-	float2 texCoord : TEXCOORD0;
-#endif
-#if defined(ENABLE_AMBIENT_LIGHT) || defined(ENABLE_DIRECTIONAL_LIGHT) || defined(ENABLE_POINT_LIGHT) || defined(ENABLE_SPOT_LIGHT)
-	float3 normal : TEXCOORD1;
-#endif
-#if defined(ENABLE_NORMAL_MAP)
-	float3 tangent : TEXCOORD2;
-	float3 binormal : TEXCOORD3;
-#endif
-#if defined(ENABLE_SPECULAR)
-	float3 camDir : TEXCOORD4;
-#endif
-#if defined(ENABLE_POINT_LIGHT) || defined(ENABLE_SPOT_LIGHT)
-	float3 worldPos : TEXCOORD5;
-#endif
-};
-
 float4 ps_main(PS_INPUT Input) : COLOR0
 {
 #if defined(ENABLE_AMBIENT_LIGHT) || defined(ENABLE_DIRECTIONAL_LIGHT) || defined(ENABLE_POINT_LIGHT) || defined(ENABLE_SPOT_LIGHT)
@@ -429,7 +426,7 @@ float4 ps_main(PS_INPUT Input) : COLOR0
 	finalAlpha = saturate(finalAlpha);
 #endif
 
-	return float4(pow(abs(finalColor), 2.2f), finalAlpha);
+	return float4(pow(finalColor, 2.2f), finalAlpha);
 }
 
 // ==================================================================================
@@ -437,7 +434,7 @@ float4 ps_main(PS_INPUT Input) : COLOR0
 // ==================================================================================
 technique SpriteShader
 {
-	pass Pass_0
+	pass Sprite
 	{
 		SRCBLEND = SRCALPHA;
 		DESTBLEND = INVSRCALPHA;

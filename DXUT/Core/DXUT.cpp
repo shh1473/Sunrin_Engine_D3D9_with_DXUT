@@ -1177,13 +1177,13 @@ HRESULT WINAPI DXUTCreateWindow( const WCHAR* strWindowTitle, HINSTANCE hInstanc
 
         RECT rc;
         SetRect( &rc, 0, 0, nDefaultWidth, nDefaultHeight );
-        AdjustWindowRect( &rc, WS_OVERLAPPEDWINDOW, ( hMenu != NULL ) ? true : false );
+        AdjustWindowRect( &rc, WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX, ( hMenu != NULL ) ? true : false );
 
         WCHAR* strCachedWindowTitle = GetDXUTState().GetWindowTitle();
         wcscpy_s( strCachedWindowTitle, 256, strWindowTitle );
 
         // Create the render window
-        HWND hWnd = CreateWindow( L"Direct3DWindowClass", strWindowTitle, WS_OVERLAPPEDWINDOW,
+        HWND hWnd = CreateWindow( L"Direct3DWindowClass", strWindowTitle, WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX,
                                   x, y, ( rc.right - rc.left ), ( rc.bottom - rc.top ), 0,
                                   hMenu, hInstance, 0 );
         if( hWnd == NULL )

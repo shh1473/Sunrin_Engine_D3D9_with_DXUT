@@ -4,7 +4,7 @@
 SpecularMapSpriteScene::SpecularMapSpriteScene()
 {
 	// »ý¼º
-	camera = new Camera(800.0f, 600.0f);
+	camera = new Camera(app.surfaces[L"BackBuffer"]);
 	AddChild(camera);
 
 	sptLight = new SpotLight();

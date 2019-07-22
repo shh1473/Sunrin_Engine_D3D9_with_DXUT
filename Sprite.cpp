@@ -2,8 +2,8 @@
 #include "Sprite.h"
 #include "App.h"
 
-Sprite::Sprite(Shader *shader, VertexDeclaration *vertexDeclaration, Material *material, unsigned flag) :
-	renderFlag(flag),
+Sprite::Sprite(Shader *shader, VertexDeclaration *vertexDeclaration, Material *material, unsigned renderFlags) :
+	renderFlags(renderFlags),
 	widthFrameIndex(0),
 	heightFrameIndex(0),
 	color(1.0f, 1.0f, 1.0f, 1.0f),
@@ -78,6 +78,8 @@ Sprite::~Sprite()
 
 void Sprite::Render()
 {
+	Object::Render();
+
 	static D3DXMATRIX WVPMatrix;
 
 	D3DXMatrixMultiply(&WVPMatrix, &worldMatrix, &app.camera->viewMatrix);
@@ -86,88 +88,125 @@ void Sprite::Render()
 	shader->shader->SetMatrix(shader->shader->GetParameterByName(NULL, "WVPMatrix"), &WVPMatrix);
 	shader->shader->SetVector(shader->shader->GetParameterByName(NULL, "Color"), &color);
 
-	if (renderFlag & SPRITE_ENABLE_TINT)
+	if (renderFlags & SPRITE_ENABLE_TINT)
 	{
 		shader->shader->SetVector(shader->shader->GetParameterByName(NULL, "Tint"), &material->tint);
 	}
 
-	if (renderFlag & SPRITE_ENABLE_DIFFUSE_MAP)
+	if (renderFlags & SPRITE_ENABLE_DIFFUSE_MAP)
 	{
 		shader->shader->SetTexture(shader->shader->GetParameterByName(NULL, "DiffuseMap"), material->diffuseMap->texture);
 	}
 
-	if (renderFlag & SPRITE_ENABLE_SPECULAR_MAP)
+	if (renderFlags & SPRITE_ENABLE_SPECULAR_MAP)
 	{
 		shader->shader->SetTexture(shader->shader->GetParameterByName(NULL, "SpecularMap"), material->specularMap->texture);
 	}
 
-	if (renderFlag & SPRITE_ENABLE_NORMAL_MAP)
+	if (renderFlags & SPRITE_ENABLE_NORMAL_MAP)
 	{
 		shader->shader->SetTexture(shader->shader->GetParameterByName(NULL, "NormalMap"), material->normalMap->texture);
 	}
 
-	if (renderFlag & SPRITE_ENABLE_AMBIENT_LIGHT ||
-		renderFlag & SPRITE_ENABLE_DIRECTIONAL_LIGHT ||
-		renderFlag & SPRITE_ENABLE_POINT_LIGHT ||
-		renderFlag & SPRITE_ENABLE_SPOT_LIGHT)
+	if (renderFlags & SPRITE_ENABLE_AMBIENT_LIGHT ||
+		renderFlags & SPRITE_ENABLE_DIRECTIONAL_LIGHT ||
+		renderFlags & SPRITE_ENABLE_POINT_LIGHT ||
+		renderFlags & SPRITE_ENABLE_SPOT_LIGHT)
 	{
 		shader->shader->SetMatrix(shader->shader->GetParameterByName(NULL, "WorldMatrix"), &worldMatrix);
 	}
 
-	if (renderFlag & SPRITE_ENABLE_AMBIENT_LIGHT)
+	if (renderFlags & SPRITE_ENABLE_AMBIENT_LIGHT)
 	{
 		static AmbientLightData ambientLightData;
-		ambientLightData.colorIntensity = ambientLight->colorIntensity;
+
+		if (ambientLight)
+		{
+			ambientLightData.colorIntensity = ambientLight->colorIntensity;
+		}
+		else
+		{
+			ZeroMemory(&ambientLightData, sizeof(AmbientLightData));
+		}
 
 		shader->shader->SetValue(shader->shader->GetParameterByName(NULL, "AmbLight"), &ambientLightData, sizeof(AmbientLightData));
 	}
 
-	if (renderFlag & SPRITE_ENABLE_DIRECTIONAL_LIGHT)
+	if (renderFlags & SPRITE_ENABLE_DIRECTIONAL_LIGHT)
 	{
 		static DirectionalLightData directionalLightData[SPRITE_MAX_DIRECTIONAL_LIGHT];
+
 		for (unsigned i = 0; i < directionalLightCount; ++i)
 		{
-			directionalLightData[i].colorIntensity = directionalLights[i]->colorIntensity;
-			directionalLightData[i].direction = directionalLights[i]->direction;
+			if (directionalLights[i])
+			{
+				directionalLightData[i].colorIntensity = directionalLights[i]->colorIntensity;
+				directionalLightData[i].direction = directionalLights[i]->direction;
+			}
+			else
+			{
+				ZeroMemory(&directionalLightData[i], sizeof(DirectionalLightData));
+				directionalLightData[i].direction.z = 1.0f;
+			}
 		}
 
 		shader->shader->SetValue(shader->shader->GetParameterByName(NULL, "DirLights"), directionalLightData, sizeof(DirectionalLightData) * directionalLightCount);
 	}
 
-	if (renderFlag & SPRITE_ENABLE_POINT_LIGHT)
+	if (renderFlags & SPRITE_ENABLE_POINT_LIGHT)
 	{
 		static PointLightData pointLightData[SPRITE_MAX_POINT_LIGHT];
+
 		for (unsigned i = 0; i < pointLightCount; ++i)
 		{
-			pointLightData[i].colorIntensity = pointLights[i]->colorIntensity;
-			pointLightData[i].translationRadius.x = pointLights[i]->translation.x;
-			pointLightData[i].translationRadius.y = pointLights[i]->translation.y;
-			pointLightData[i].translationRadius.z = pointLights[i]->translation.z;
-			pointLightData[i].translationRadius.w = pointLights[i]->radius;
+			if (pointLights[i])
+			{
+				pointLightData[i].colorIntensity = pointLights[i]->colorIntensity;
+				pointLightData[i].translationRadius.x = pointLights[i]->translation.x;
+				pointLightData[i].translationRadius.y = pointLights[i]->translation.y;
+				pointLightData[i].translationRadius.z = pointLights[i]->translation.z;
+				pointLightData[i].translationRadius.w = pointLights[i]->radius;
+			}
+			else
+			{
+				ZeroMemory(&pointLightData[i], sizeof(PointLightData));
+				pointLightData[i].translationRadius.w = 1.0f;
+			}
 		}
 
 		shader->shader->SetValue(shader->shader->GetParameterByName(NULL, "PntLights"), pointLightData, sizeof(PointLightData) * pointLightCount);
 	}
 
-	if (renderFlag & SPRITE_ENABLE_SPOT_LIGHT)
+	if (renderFlags & SPRITE_ENABLE_SPOT_LIGHT)
 	{
 		static SpotLightData spotLightData[SPRITE_MAX_SPOT_LIGHT];
+
 		for (unsigned i = 0; i < spotLightCount; ++i)
 		{
-			spotLightData[i].colorIntensity = spotLights[i]->colorIntensity;
-			spotLightData[i].direction = spotLights[i]->direction;
-			spotLightData[i].coneAngle.x = cos(D3DXToRadian(spotLights[i]->innerAngle));
-			spotLightData[i].coneAngle.y = cos(D3DXToRadian(spotLights[i]->outerAngle));
-			spotLightData[i].translationRadius.x = spotLights[i]->translation.x;
-			spotLightData[i].translationRadius.y = spotLights[i]->translation.y;
-			spotLightData[i].translationRadius.z = spotLights[i]->translation.z;
-			spotLightData[i].translationRadius.w = spotLights[i]->radius;
+			if (spotLights[i])
+			{
+				spotLightData[i].colorIntensity = spotLights[i]->colorIntensity;
+				spotLightData[i].direction = spotLights[i]->direction;
+				spotLightData[i].coneAngle.x = cos(D3DXToRadian(spotLights[i]->innerAngle));
+				spotLightData[i].coneAngle.y = cos(D3DXToRadian(spotLights[i]->outerAngle));
+				spotLightData[i].translationRadius.x = spotLights[i]->translation.x;
+				spotLightData[i].translationRadius.y = spotLights[i]->translation.y;
+				spotLightData[i].translationRadius.z = spotLights[i]->translation.z;
+				spotLightData[i].translationRadius.w = spotLights[i]->radius;
+			}
+			else
+			{
+				ZeroMemory(&spotLightData[i], sizeof(SpotLightData));
+				spotLightData[i].direction.z = 1.0f;
+				spotLightData[i].coneAngle.x = 1.0f;
+				spotLightData[i].translationRadius.w = 1.0f;
+			}
 		}
 
 		shader->shader->SetValue(shader->shader->GetParameterByName(NULL, "SptLights"), spotLightData, sizeof(SpotLightData) * spotLightCount);
 	}
 
-	if (renderFlag & SPRITE_ENABLE_SPECULAR)
+	if (renderFlags & SPRITE_ENABLE_SPECULAR)
 	{
 		static D3DXVECTOR4 cameraTranslataion(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -180,22 +219,16 @@ void Sprite::Render()
 		shader->shader->SetFloat(shader->shader->GetParameterByName(NULL, "SpecularPower"), material->specularPower);
 	}
 
-	unsigned passCount;
-	shader->shader->Begin(&passCount, 0);
+	shader->shader->Begin(nullptr, NULL);
+	shader->shader->BeginPass(0);
 
-	for (unsigned i = 0; i < passCount; ++i)
-	{
-		shader->shader->BeginPass(i);
+	DXUTGetD3D9Device()->SetStreamSource(0, vertexBuffer, 0, sizeof(Vertex));
+	DXUTGetD3D9Device()->SetIndices(indexBuffer);
+	DXUTGetD3D9Device()->SetVertexDeclaration(vertexDeclaration->vertexDeclaration);
 
-		DXUTGetD3D9Device()->SetStreamSource(0, vertexBuffer, 0, sizeof(Vertex));
-		DXUTGetD3D9Device()->SetIndices(indexBuffer);
-		DXUTGetD3D9Device()->SetVertexDeclaration(vertexDeclaration->vertexDeclaration);
+	DXUTGetD3D9Device()->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 4, 0, 2);
 
-		DXUTGetD3D9Device()->DrawIndexedPrimitive(D3DPT_TRIANGLELIST, 0, 0, 4, 0, 2);
-
-		shader->shader->EndPass();
-	}
-
+	shader->shader->EndPass();
 	shader->shader->End();
 }
 
