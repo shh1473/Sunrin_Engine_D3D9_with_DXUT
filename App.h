@@ -7,6 +7,7 @@
 #include "VertexDeclaration.h"
 #include "Material.h"
 #include "Surface.h"
+#include "Font.h"
 
 class App
 {
@@ -44,6 +45,12 @@ public:
 		wstring name,
 		unsigned width = 0,
 		unsigned height = 0);
+	void CreateFont_(
+		wstring name,
+		wstring fontName,
+		int height,
+		unsigned fontWeight,
+		BOOL isItalic);
 
 public:
 	// 입력
@@ -69,6 +76,10 @@ public:
 	map<wstring, VertexDeclaration*> vertexDeclarations;
 	map<wstring, Material*> materials;
 	map<wstring, Surface*> surfaces;
+	map<wstring, Font*> fonts;
+
+	// 스프라이트
+	ID3DXSprite * sprite;
 
 };
 

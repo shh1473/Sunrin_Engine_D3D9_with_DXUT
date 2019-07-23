@@ -12,6 +12,8 @@ public:
 	virtual void Update();
 	virtual void Render();
 
+	virtual void UpdateMatrix();
+
 	void AddChild(Object *child);
 
 public:

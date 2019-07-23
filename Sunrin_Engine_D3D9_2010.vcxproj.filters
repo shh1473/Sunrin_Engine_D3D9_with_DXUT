@@ -114,6 +114,21 @@
     <Filter Include="Test\Scene\14_BloomScene">
       <UniqueIdentifier>{b1017534-525a-4081-943a-3c0d5bead8eb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sunrin_Engine_D3D9\Resource\Font">
+      <UniqueIdentifier>{272d32ed-326e-4363-b8ca-d6682405768f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Test\Scene\15_UIScene">
+      <UniqueIdentifier>{2002cf0f-6311-4aa7-8c69-36b22982b0fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sunrin_Engine_D3D9\Object\UI">
+      <UniqueIdentifier>{25c83427-5b4d-43c4-ac78-55a25f589c46}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sunrin_Engine_D3D9\Object\UI\Text">
+      <UniqueIdentifier>{0d750618-77b1-4a4c-97c3-6bd326498d87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sunrin_Engine_D3D9\Object\UI\Image">
+      <UniqueIdentifier>{acbbdebe-418c-4e9e-8aa7-5f9ed98ad020}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="DXUT\Optional\directx.ico">
@@ -275,6 +290,21 @@
     <ClCompile Include="Test\BloomScene.cpp">
       <Filter>Test\Scene\14_BloomScene</Filter>
     </ClCompile>
+    <ClCompile Include="Font.cpp">
+      <Filter>Sunrin_Engine_D3D9\Resource\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="Text.cpp">
+      <Filter>Sunrin_Engine_D3D9\Object\UI\Text</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\UIScene.cpp">
+      <Filter>Test\Scene\15_UIScene</Filter>
+    </ClCompile>
+    <ClCompile Include="UI.cpp">
+      <Filter>Sunrin_Engine_D3D9\Object\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Image.cpp">
+      <Filter>Sunrin_Engine_D3D9\Object\UI\Image</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CLInclude Include="resource.h">
@@ -379,6 +409,21 @@
     </ClInclude>
     <ClInclude Include="Test\BloomScene.h">
       <Filter>Test\Scene\14_BloomScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Font.h">
+      <Filter>Sunrin_Engine_D3D9\Resource\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="Text.h">
+      <Filter>Sunrin_Engine_D3D9\Object\UI\Text</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\UIScene.h">
+      <Filter>Test\Scene\15_UIScene</Filter>
+    </ClInclude>
+    <ClInclude Include="UI.h">
+      <Filter>Sunrin_Engine_D3D9\Object\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Image.h">
+      <Filter>Sunrin_Engine_D3D9\Object\UI\Image</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

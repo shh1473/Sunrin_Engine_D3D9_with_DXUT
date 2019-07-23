@@ -2,11 +2,11 @@
 
 #include "../SunrinEngine.h"
 
-class BlurScene : public Object
+class UIScene : public Object
 {
 public:
-	BlurScene();
-	virtual ~BlurScene();
+	UIScene();
+	virtual ~UIScene();
 
 	virtual void Update();
 	virtual void Render();
@@ -17,5 +17,6 @@ public:
 	SpotLight *sptLight;
 
 	Sprite *sprite;
+	Text *UIText;
 
 };

@@ -12,10 +12,10 @@ public:
 	virtual void Render();
 
 public:
-	EffectCamera * camera;
+	EffectCamera *camera;
 
-	SpotLight * sptLight;
+	SpotLight *sptLight;
 
-	Sprite * sprite;
+	Sprite *sprite;
 
 };

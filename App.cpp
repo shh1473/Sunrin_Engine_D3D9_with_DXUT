@@ -1,6 +1,6 @@
 #include "DXUT.h"
 #include "App.h"
-#include "Test/BloomScene.h"
+#include "Test/UIScene.h"
 
 App::App() :
 	mousePos({ 0, 0 }),
@@ -15,7 +15,13 @@ App::App() :
 
 void App::Initialize()
 {
+	DXUTGetD3D9Device()->SetSamplerState(0, D3DSAMP_MINFILTER, D3DTEXF_NONE);
+	DXUTGetD3D9Device()->SetSamplerState(0, D3DSAMP_MAGFILTER, D3DTEXF_NONE);
+	DXUTGetD3D9Device()->SetSamplerState(0, D3DSAMP_MIPFILTER, D3DTEXF_NONE);
+
 	Sound::manager.Initialize(DXUTGetHWND(), DSSCL_PRIORITY);
+
+	D3DXCreateSprite(DXUTGetD3D9Device(), &sprite);
 
 	// 자원 로딩
 	// 텍스쳐
@@ -105,7 +111,7 @@ void App::Initialize()
 	CreateVertexDeclaration(L"TangentBinormal", VERTEX_DECL_TEXCOORD | VERTEX_DECL_NORMAL | VERTEX_DECL_TANGENT_AND_BINORMAL);
 
 	// 재질
-	CreateMaterial(L"Tint", 1, 1);
+	CreateMaterial(L"Default", 1, 1);
 	CreateMaterial(L"Fieldstone", 1, 1, L"FieldstoneDM", L"FieldstoneSM", L"FieldstoneNM");
 	CreateMaterial(L"Fieldstone3x3", 3, 3, L"FieldstoneDM", L"FieldstoneSM", L"FieldstoneNM");
 
@@ -120,8 +126,11 @@ void App::Initialize()
 	CreateSurface(L"SourceMap3");
 	CreateSurface(L"SourceMap4");
 
+	// 폰트
+	CreateFont_(L"DungGeunMo", L"궁서", 30, FW_NORMAL, FALSE);
+
 	// 첫 씬
-	nextScene = new BloomScene();
+	nextScene = new UIScene();
 }
 
 void App::Shutdown()
@@ -158,6 +167,13 @@ void App::Shutdown()
 	{
 		SAFE_DELETE(iter.second);
 	}
+
+	for (auto iter : fonts)
+	{
+		SAFE_DELETE(iter.second);
+	}
+
+	SAFE_RELEASE(sprite);
 }
 
 void App::Update()
@@ -368,6 +384,25 @@ void App::CreateSurface(wstring name, unsigned width, unsigned height)
 
 	surfaces[name]->texture->GetSurfaceLevel(0, &surfaces[name]->surface);
 	surfaces[name]->surface->GetDesc(&surfaces[name]->desc);
+}
+
+void App::CreateFont_(wstring name, wstring fontName, int height, unsigned fontWeight, BOOL isItalic)
+{
+	fonts[name] = new Font();
+
+	D3DXCreateFont(
+		DXUTGetD3D9Device(),
+		height,
+		0,
+		fontWeight,
+		1,
+		isItalic,
+		DEFAULT_CHARSET,
+		OUT_TT_PRECIS,
+		CLEARTYPE_QUALITY,
+		DEFAULT_PITCH | FF_DONTCARE,
+		fontName.c_str(),
+		&fonts[name]->font);
 }
 
 App app;

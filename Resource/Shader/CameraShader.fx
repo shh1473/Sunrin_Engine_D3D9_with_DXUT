@@ -48,7 +48,7 @@ float4 ThresholdIntensityViewportInv;
 #endif
 
 #if defined(ENABLE_BLUR) || defined(ENABLE_BLOOM)
-static const float BlurKernel[7] = { 0.3f, 0.1f, 0.05f, 0.1f, 0.05f, 0.1f, 0.3f };
+static const float BlurKernel[7] = { 0.05f, 0.1f, 0.2f, 0.3f, 0.2f, 0.1f, 0.05f };
 #endif
 
 #if defined(COLOR_CONTRAST)
@@ -136,7 +136,11 @@ float4 Horizontal_Blur_ps_main(PS_INPUT Input) : COLOR0
 
 	for (int i = 0; i < 7; ++i)
 	{
-		blur += BlurKernel[i] * tex2D(SourceSampler1, float2(Input.TexCoord.x + ((float)(i - 3) * ThresholdIntensityViewportInv.z), Input.TexCoord.y));
+		float coordX = Input.TexCoord.x + ((float)(i - 3) * ThresholdIntensityViewportInv.z);
+
+		coordX = clamp(coordX, 0.0f, 1.0f);
+
+		blur += BlurKernel[i] * tex2D(SourceSampler1, float2(coordX, Input.TexCoord.y));
 	}
 
 	return blur;
@@ -153,7 +157,11 @@ float4 Vertical_Blur_ps_main(PS_INPUT Input) : COLOR0
 
 	for (int i = 0; i < 7; ++i)
 	{
-		blur += BlurKernel[i] * tex2D(SourceSampler2, float2(Input.TexCoord.x, Input.TexCoord.y + ((float)(i - 3) * ThresholdIntensityViewportInv.w)));
+		float coordY = Input.TexCoord.y + ((float)(i - 3) * ThresholdIntensityViewportInv.w);
+
+		coordY = clamp(coordY, 0.0f, 1.0f);
+
+		blur += BlurKernel[i] * tex2D(SourceSampler2, float2(Input.TexCoord.x, coordY));
 	}
 
 	return blur;

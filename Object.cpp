@@ -42,16 +42,7 @@ void Object::Update()
 	}), children.end());
 
 	// 월드 매트릭스 업데이트
-	static D3DXMATRIX translationMatrix;
-	static D3DXMATRIX rotationMatrix;
-	static D3DXMATRIX scalingMatrix;
-
-	D3DXMatrixTranslation(&translationMatrix, translation.x, translation.y, translation.z);
-	D3DXMatrixRotationYawPitchRoll(&rotationMatrix, D3DXToRadian(rotation.y), D3DXToRadian(rotation.x), D3DXToRadian(rotation.z));
-	D3DXMatrixScaling(&scalingMatrix, scaling.x, scaling.y, scaling.z);
-
-	D3DXMatrixMultiply(&worldMatrix, &scalingMatrix, &rotationMatrix);
-	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &translationMatrix);
+	UpdateMatrix();
 
 	if (parent)
 	{
@@ -74,6 +65,20 @@ void Object::Render()
 			iter->Render();
 		}
 	}
+}
+
+void Object::UpdateMatrix()
+{
+	static D3DXMATRIX translationMatrix;
+	static D3DXMATRIX rotationMatrix;
+	static D3DXMATRIX scalingMatrix;
+
+	D3DXMatrixTranslation(&translationMatrix, translation.x, translation.y, translation.z);
+	D3DXMatrixRotationYawPitchRoll(&rotationMatrix, D3DXToRadian(rotation.y), D3DXToRadian(rotation.x), D3DXToRadian(rotation.z));
+	D3DXMatrixScaling(&scalingMatrix, scaling.x, scaling.y, scaling.z);
+
+	D3DXMatrixMultiply(&worldMatrix, &scalingMatrix, &rotationMatrix);
+	D3DXMatrixMultiply(&worldMatrix, &worldMatrix, &translationMatrix);
 }
 
 void Object::AddChild(Object *child)
